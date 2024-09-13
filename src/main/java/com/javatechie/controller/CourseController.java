@@ -1,6 +1,9 @@
 package com.javatechie.controller;
 
 import com.javatechie.dto.Course;
+import com.javatechie.dto.CourseRequestDTO;
+import com.javatechie.dto.CourseResponseDTO;
+import com.javatechie.dto.ServiceResponse;
 import com.javatechie.service.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +21,20 @@ public class CourseController {
         this.courseService = courseService;
     }
     @PostMapping
-    public ResponseEntity<?> addCourse(@RequestBody Course course) {
-   Course newCourse =  courseService.onboardNewCourse(course);
-    return new ResponseEntity<>(newCourse, HttpStatus.CREATED);
+    public ServiceResponse<CourseResponseDTO> addCourse(@RequestBody CourseRequestDTO course) {
+   CourseResponseDTO newCourse =  courseService.onboardNewCourse(course);
+    return new ServiceResponse<>(HttpStatus.CREATED,newCourse);
     }
     @GetMapping
-    public ResponseEntity<?> findAllCourses() {
-        return new ResponseEntity<>(courseService.viewAllCourses(),HttpStatus.OK);
+    public ServiceResponse<List<CourseResponseDTO>> findAllCourses() {
+       List<CourseResponseDTO> courseResponseDTOS = courseService.viewAllCourses();
+       return new ServiceResponse<>(HttpStatus.OK,courseResponseDTOS);
     }
 
     @GetMapping("/search/request")
-    public ResponseEntity<?> findCourseById(@RequestParam(required = false) Integer courseId) {
-        return  new ResponseEntity<>(courseService.findCourseById(courseId),HttpStatus.OK);
+    public ServiceResponse<CourseResponseDTO> findCourseUsingRequestParam(@RequestParam(required = false) Integer courseId) {
+        CourseResponseDTO responseDTO = courseService.findCourseById(courseId);
+        return new ServiceResponse<>(HttpStatus.OK,responseDTO);
     }
     @DeleteMapping("{courseId}")
     public ResponseEntity<?> deleteCourseById(@PathVariable Integer courseId) {
@@ -38,7 +43,8 @@ public class CourseController {
     }
 
     @PutMapping("/{courseId}")
-    public ResponseEntity<?> updateCourse(@PathVariable int courseId, Course course) {
-        return new ResponseEntity<>(courseService.updateCourse(courseId, course),HttpStatus.OK);
+    public ServiceResponse<CourseResponseDTO> updateCourse(@PathVariable int courseId, CourseRequestDTO course) {
+        CourseResponseDTO courseResponseDTO = courseService.updateCourse(courseId, course);
+        return new ServiceResponse<>(HttpStatus.OK,courseResponseDTO);
     }
 }
